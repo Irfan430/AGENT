@@ -8,7 +8,7 @@ from interpreter import interpreter
 interpreter.llm.model = "openai/deepseek-chat"
 
 # Your API Key (sk-xxxx works fine)
-interpreter.llm.api_key = "sk-XXXXXXXXXXXXXXXXXXXXXXXX"
+interpreter.llm.api_key = "sk-15b0ddf886024792901ccc7123501623"
 
 # DeepSeek API Base
 interpreter.llm.api_base = "https://api.deepseek.com/v1"
