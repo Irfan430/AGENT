@@ -133,7 +133,7 @@ class Terminal:
                         f"# We wouldn't want to have maximum recursion depth!\nimport json\ndef get_last_output():\n    return '''{last_output}'''",
                     )
 
-        if stream == False:
+        if not stream:
             # If stream == False, *pull* from _streaming_run.
             output_messages = []
             for chunk in self._streaming_run(language, code, display=display):
@@ -149,7 +149,7 @@ class Terminal:
                         output_messages.append(chunk)
             return output_messages
 
-        elif stream == True:
+        elif stream:
             # If stream == True, replace this with _streaming_run.
             return self._streaming_run(language, code, display=display)
 

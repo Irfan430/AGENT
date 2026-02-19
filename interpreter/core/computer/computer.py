@@ -127,7 +127,6 @@ Do not import the computer module, or any of its sub-modules. They are already i
         """
         tool_info = {"signature": tool.__class__.__name__, "methods": []}
         if tool.__class__.__name__ == "Browser":
-            methods = []
             for name in dir(tool):
                 if "driver" in name:
                     continue  # Skip methods containing 'driver' in their name
@@ -226,7 +225,7 @@ Do not import the computer module, or any of its sub-modules. They are already i
             try:
                 json.dumps(obj)
                 return True
-            except:
+            except Exception:
                 return False
 
         return {k: v for k, v in self.__dict__.items() if json_serializable(v)}

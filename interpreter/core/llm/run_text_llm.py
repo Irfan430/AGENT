@@ -7,7 +7,7 @@ def run_text_llm(llm, params):
             params["messages"][0][
                 "content"
             ] += "\n" + llm.execution_instructions
-        except:
+        except Exception:
             print('params["messages"][0]', params["messages"][0])
             raise
 
@@ -27,7 +27,7 @@ def run_text_llm(llm, params):
 
         content = chunk["choices"][0]["delta"].get("content", "")
 
-        if content == None:
+        if content is None:
             continue
 
         accumulated_block += content
@@ -53,9 +53,9 @@ def run_text_llm(llm, params):
 
                 # Default to python if not specified
                 if language == "":
-                    if llm.interpreter.os == False:
+                    if not llm.interpreter.os:
                         language = "python"
-                    elif llm.interpreter.os == False:
+                    elif not llm.interpreter.os:
                         # OS mode does this frequently. Takes notes with markdown code blocks
                         language = "text"
                 else:

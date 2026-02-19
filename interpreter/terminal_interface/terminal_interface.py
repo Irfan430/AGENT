@@ -39,7 +39,7 @@ random.shuffle(examples)
 try:
     for example in examples:
         readline.add_history(example)
-except:
+except Exception:
     # If they don't have readline, that's fine
     pass
 
@@ -106,7 +106,7 @@ def terminal_interface(interpreter, message):
             try:
                 # This lets users hit the up arrow key for past messages
                 readline.add_history(message)
-            except:
+            except Exception:
                 # If the user doesn't have readline (may be the case on windows), that's fine
                 pass
 
@@ -134,7 +134,7 @@ def terminal_interface(interpreter, message):
 
             if (
                 interpreter.llm.supports_vision
-                or interpreter.llm.vision_renderer != None
+                or interpreter.llm.vision_renderer is not None
             ):
                 # Is the input a path to an image? Like they just dragged it into the terminal?
                 image_path = find_image_path(message)
@@ -363,7 +363,7 @@ def terminal_interface(interpreter, message):
                         or ("format" in chunk and chunk["format"] == "javascript")
                     )
                 ):
-                    if (interpreter.os == True) and (interpreter.verbose == False):
+                    if (interpreter.os) and (not interpreter.verbose):
                         # We don't display things to the user in OS control mode, since we use vision to communicate the screen to the LLM so much.
                         # But if verbose is true, we do display it!
                         continue
@@ -439,7 +439,7 @@ def terminal_interface(interpreter, message):
                         active_block.active_line = chunk["content"]
 
                         # Display action notifications if we're in OS mode
-                        if interpreter.os and active_block.active_line != None:
+                        if interpreter.os and active_block.active_line is not None:
                             action = ""
 
                             code_lines = active_block.code.split("\n")
@@ -498,7 +498,7 @@ def terminal_interface(interpreter, message):
                                 elif action.startswith("computer.keyboard.press("):
                                     description = f"Pressing {arguments}."
                                 elif action == "computer.os.get_selected_text()":
-                                    description = f"Getting selected text."
+                                    description = "Getting selected text."
 
                                 if description:
                                     interpreter.computer.os.notify(description)
@@ -535,7 +535,7 @@ def terminal_interface(interpreter, message):
                 continue
             else:
                 break
-        except:
+        except Exception:
             if interpreter.debug:
                 system_info(interpreter)
             raise

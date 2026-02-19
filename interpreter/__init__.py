@@ -20,7 +20,7 @@ if "--os" in sys.argv:
             else:
                 try:
                     rich_print(Markdown(line))
-                except UnicodeEncodeError as e:
+                except UnicodeEncodeError:
                     # Replace the problematic character or handle the error as needed
                     print("Error displaying line:", line)
 
@@ -34,7 +34,7 @@ if "--os" in sys.argv:
 
     def check_for_update():
         # Fetch the latest version from the PyPI API
-        response = requests.get(f"https://pypi.org/pypi/open-interpreter/json")
+        response = requests.get("https://pypi.org/pypi/open-interpreter/json")
         latest_version = response.json()["info"]["version"]
 
         # Get the current version using importlib.metadata

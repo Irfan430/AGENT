@@ -4,7 +4,6 @@ import plistlib
 import sqlite3
 import subprocess
 import sys
-import time
 
 
 class SMS:
@@ -22,7 +21,7 @@ class SMS:
             else:
                 home_directory = os.path.expanduser("~")
             return f"{home_directory}/Library/Messages/chat.db"
-        except:
+        except Exception:
             home_directory = os.path.expanduser("~")
             return f"{home_directory}/Library/Messages/chat.db"
 
@@ -83,7 +82,7 @@ LEFT JOIN handle ON message.handle_id = handle.ROWID
                         # Try to parse as plist
                         plist_data = plistlib.loads(text_data)
                         text = plist_data.get("NS.string", "")
-                    except:
+                    except Exception:
                         # If plist parsing fails, use the raw string
                         text = text_data
                     if text:  # Only add messages with content
@@ -97,7 +96,7 @@ LEFT JOIN handle ON message.handle_id = handle.ROWID
                         readable_messages.append(
                             {"date": date, "from": sender, "text": text}
                         )
-            except sqlite3.Error as e:
+            except sqlite3.Error:
                 break
 
         conn.close()

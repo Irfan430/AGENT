@@ -3,7 +3,7 @@ import os
 import time
 from typing import List, TypedDict
 
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import version
 import requests
 
 from interpreter.terminal_interface.profiles.profiles import write_key_to_profile
@@ -31,7 +31,7 @@ Want to contribute? Run `interpreter --model i` to use our free, hosted model. C
 
 def display_contributing_current_message():
     display_markdown_message(
-        f"""
+        """
 ---
 > This conversation will be used to train Open Interpreter's open-source language model.
 """
@@ -162,8 +162,8 @@ def get_all_conversations(interpreter) -> List[List]:
     return all_conversations
 
 
-def is_list_of_lists(l):
-    return isinstance(l, list) and all([isinstance(e, list) for e in l])
+def is_list_of_lists(lst):
+    return isinstance(lst, list) and all([isinstance(e, list) for e in lst])
 
 
 def contribute_conversations(
@@ -188,6 +188,6 @@ def contribute_conversations(
 
     try:
         requests.post(url, json=payload)
-    except:
+    except Exception:
         # Non blocking
         pass

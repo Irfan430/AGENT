@@ -1,12 +1,4 @@
 import base64
-import io
-import os
-import platform
-import pprint
-import subprocess
-import time
-import warnings
-from contextlib import redirect_stdout
 from io import BytesIO
 
 import requests
@@ -22,7 +14,7 @@ from ..utils.recipient_utils import format_to_recipient
 # Lazy import of optional packages
 try:
     cv2 = lazy_import("cv2")
-except:
+except Exception:
     cv2 = None  # Fixes colab error
 
 pyautogui = lazy_import("pyautogui")
@@ -31,7 +23,7 @@ pyautogui = lazy_import("pyautogui")
 try:
     # Attempt to get the screen size
     pyautogui.size()
-except:
+except Exception:
     pyautogui = None
 
 np = lazy_import("numpy")
@@ -143,7 +135,7 @@ class Display:
         #         )
         #     return screenshot  # Still return a PIL image
 
-        if quadrant == None:
+        if quadrant is None:
             if active_app_only:
                 active_window = pywinctl.getActiveWindow()
                 if active_window:
@@ -238,7 +230,7 @@ class Display:
                 )
 
                 return result
-            except:
+            except Exception:
                 if self.computer.debug:
                     # We want to know these bugs lmao
                     raise
@@ -251,7 +243,7 @@ class Display:
                 print(message)
 
                 # Take a screenshot
-                if screenshot == None:
+                if screenshot is None:
                     screenshot = self.screenshot(show=False)
 
                 # Downscale the screenshot to 1920x1080
@@ -278,7 +270,7 @@ class Display:
         """
         Searches for specified text within a screenshot or the current screen if no screenshot is provided.
         """
-        if screenshot == None:
+        if screenshot is None:
             screenshot = self.screenshot(show=False)
 
         if not self.computer.offline:
@@ -294,7 +286,7 @@ class Display:
                 )
                 response = response.json()
                 return response
-            except:
+            except Exception:
                 print("Attempting to find the text locally.")
 
         # We'll only get here if 1) self.computer.offline = True, or the API failed
@@ -310,7 +302,7 @@ class Display:
         """
         Extracts and returns text from a screenshot or the current screen as a list of lists, each representing a line of text.
         """
-        if screenshot == None:
+        if screenshot is None:
             screenshot = self.screenshot(show=False, force_image=True)
 
         if not self.computer.offline:
@@ -326,14 +318,14 @@ class Display:
                 )
                 response = response.json()
                 return response
-            except:
+            except Exception:
                 print("Attempting to get the text locally.")
 
         # We'll only get here if 1) self.computer.offline = True, or the API failed
 
         try:
             return pytesseract_get_text(screenshot)
-        except:
+        except Exception:
             raise Exception(
                 "Failed to find text locally.\n\nTo find text in order to use the mouse, please make sure you've installed `pytesseract` along with the Tesseract executable (see this Stack Overflow answer for help installing Tesseract: https://stackoverflow.com/questions/50951955/pytesseract-tesseractnotfound-error-tesseract-is-not-installed-or-its-not-i)."
             )

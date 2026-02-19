@@ -50,10 +50,10 @@ def profile(interpreter, filename_or_url):
             os.rename(profile_path, f"{base}_custom{extension}")
         profile = get_default_profile(filename_or_url)
 
-    if profile == None:
+    if profile is None:
         try:
             profile = get_profile(filename_or_url, profile_path)
-        except:
+        except Exception:
             if filename_or_url in ["default", "default.yaml"]:
                 # Literally this just happens to default.yaml
                 reset_profile(filename_or_url)
@@ -175,7 +175,7 @@ def apply_profile(interpreter, profile, profile_path):
                     elif profile["llm"]["model"] == "gpt-4-turbo-preview":
                         text = text.replace("gpt-4-turbo-preview", "gpt-4o")
                         profile["llm"]["model"] = "gpt-4o"
-                except:
+                except Exception:
                     raise
                     pass  # fine
 

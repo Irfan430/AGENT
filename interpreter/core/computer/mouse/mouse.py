@@ -10,7 +10,7 @@ from ..utils.recipient_utils import format_to_recipient
 # Lazy import of optional packages
 try:
     cv2 = lazy_import("cv2")
-except:
+except Exception:
     cv2 = None  # Fixes colab error
 np = lazy_import("numpy")
 pyautogui = lazy_import("pyautogui")
@@ -49,11 +49,11 @@ class Mouse:
             raise ValueError(
                 "Too many positional arguments provided. To move/click specific coordinates, use kwargs (x=x, y=y).\n\nPlease take a screenshot with computer.display.view() to find text/icons to click, then use computer.mouse.click(text) or computer.mouse.click(icon=description_of_icon) if at all possible. This is **significantly** more accurate than using coordinates. Specifying (x=x, y=y) is highly likely to fail. Specifying ('text to click') is highly likely to succeed."
             )
-        elif len(args) == 1 or text != None:
+        elif len(args) == 1 or text is not None:
             if len(args) == 1:
                 text = args[0]
 
-            if screenshot == None:
+            if screenshot is None:
                 screenshot = self.computer.display.screenshot(show=False)
 
             coordinates = self.computer.display.find(
@@ -143,7 +143,7 @@ class Mouse:
                 )
             )
         elif icon is not None:
-            if screenshot == None:
+            if screenshot is None:
                 screenshot = self.computer.display.screenshot(show=False)
 
             coordinates = self.computer.display.find(icon.strip('"'), screenshot)
@@ -273,14 +273,13 @@ class Mouse:
 
 
 import math
-import time
 
 
 def smooth_move_to(x, y, duration=2):
     start_x, start_y = pyautogui.position()
     dx = x - start_x
     dy = y - start_y
-    distance = math.hypot(dx, dy)  # Calculate the distance in pixels
+    math.hypot(dx, dy)  # Calculate the distance in pixels
 
     start_time = time.time()
 

@@ -3,7 +3,7 @@ import os
 import sys
 import time
 
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import version
 
 from interpreter.terminal_interface.contributing_conversations import (
     contribute_conversation_launch_logic,
@@ -524,7 +524,7 @@ Use """ to write multi-line messages.
                 interpreter.display_message(
                     "> **A new version of Open Interpreter is available.**\n>Please run: `pip install --upgrade open-interpreter`\n\n---"
                 )
-    except:
+    except Exception:
         # Doesn't matter
         pass
 
@@ -628,7 +628,7 @@ def main():
                         feedback = False
                     else:
                         feedback = None
-                    if feedback != None and not interpreter.contribute_conversation:
+                    if feedback is not None and not interpreter.contribute_conversation:
                         if interpreter.llm.model == "i":
                             contribute = "y"
                         else:

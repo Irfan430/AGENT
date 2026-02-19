@@ -4,7 +4,6 @@ Gotta split this out, generalize it, and move all the python additions to python
 """
 
 import ast
-import logging
 import os
 import queue
 import re
@@ -99,7 +98,7 @@ import matplotlib.pyplot as plt
 
         # try:
         #     functions = string_to_python(code)
-        # except:
+        # except Exception:
         #     # Non blocking
         #     functions = {}
 
@@ -117,7 +116,7 @@ import matplotlib.pyplot as plt
         try:
             try:
                 preprocessed_code = self.preprocess_code(code)
-            except:
+            except Exception:
                 # Any errors produced here are our fault.
                 # Also, for python, you don't need them! It's just for active_line and stuff. Just looks pretty.
                 preprocessed_code = code
@@ -126,7 +125,7 @@ import matplotlib.pyplot as plt
             yield from self._capture_output(message_queue)
         except GeneratorExit:
             raise  # gotta pass this up!
-        except:
+        except Exception:
             content = traceback.format_exc()
             yield {"type": "console", "format": "output", "content": content}
 
@@ -135,7 +134,7 @@ import matplotlib.pyplot as plt
             max_retries = 100
             while True:
                 # If self.finish_flag = True, and we didn't set it (we do below), we need to stop. That's our "stop"
-                if self.finish_flag == True:
+                if self.finish_flag:
                     if DEBUG_MODE:
                         print("interrupting kernel!!!!!")
                     self.km.interrupt_kernel()
@@ -310,7 +309,7 @@ import matplotlib.pyplot as plt
             # Split the last active line by "##" and grab the first element
             try:
                 active_line = int(last_active_line.split("##")[0])
-            except:
+            except Exception:
                 active_line = 0
             # Remove all ##active_line{number}##\n
             line = re.sub(r"##active_line\d+##\n", "", line)
@@ -403,7 +402,7 @@ def add_active_line_prints(code):
     processed_code = "\n".join(code_lines)
     try:
         tree = ast.parse(processed_code)
-    except:
+    except Exception:
         # If you can't parse the processed version, try the unprocessed version before giving up
         tree = ast.parse(code)
     transformer = AddLinePrints()

@@ -11,7 +11,6 @@ import torch
 from PIL import Image, ImageDraw, ImageEnhance, ImageFont
 from sentence_transformers import SentenceTransformer, util
 
-from .....terminal_interface.utils.oi_dir import oi_dir
 from ...utils.computer_vision import pytesseract_get_text_bounding_boxes
 
 try:
@@ -52,12 +51,12 @@ def point(description, screenshot=None, debug=False, hashes=None):
 def find_icon(description, screenshot=None, debug=False, hashes=None):
     if debug:
         print("STARTING")
-    if screenshot == None:
+    if screenshot is None:
         image_data = take_screenshot_to_pil()
     else:
         image_data = screenshot
 
-    if hashes == None:
+    if hashes is None:
         hashes = {}
 
     image_width, image_height = image_data.size
@@ -449,11 +448,10 @@ fast_model = True
 model = SentenceTransformer("clip-ViT-B-32")
 
 
-import os
 
 import timm
 
-if fast_model == False:
+if not fast_model:
     # Check if the model file exists
     if not os.path.isfile(model_path):
         # If not, create and save the model

@@ -111,7 +111,7 @@ class Java(SubprocessLanguage):
                             time.sleep(0.2)
                         break
 
-        except Exception as e:
+        except Exception:
             yield {
                 "type": "console",
                 "format": "output",

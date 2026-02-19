@@ -11,10 +11,7 @@ import litellm
 litellm.suppress_debug_info = True
 litellm.REPEATED_STREAMING_CHUNK_LIMIT = 99999999
 
-import json
 import logging
-import subprocess
-import time
 import uuid
 
 import requests
@@ -127,23 +124,23 @@ class Llm:
                 self.interpreter.conversation_id = str(uuid.uuid4())
 
         # Detect function support
-        if self.supports_functions == None:
+        if self.supports_functions is None:
             try:
                 if litellm.supports_function_calling(model):
                     self.supports_functions = True
                 else:
                     self.supports_functions = False
-            except:
+            except Exception:
                 self.supports_functions = False
 
         # Detect vision support
-        if self.supports_vision == None:
+        if self.supports_vision is None:
             try:
                 if litellm.supports_vision(model):
                     self.supports_vision = True
                 else:
                     self.supports_vision = False
-            except:
+            except Exception:
                 self.supports_vision = False
 
         # Trim image messages if they're there
@@ -164,7 +161,7 @@ class Llm:
                         if self.interpreter.verbose:
                             print("Removing image message!")
                 # Idea: we could set detail: low for the middle messages, instead of deleting them
-        elif self.supports_vision == False and self.vision_renderer:
+        elif not self.supports_vision and self.vision_renderer:
             for img_msg in image_messages:
                 if img_msg["format"] != "description":
                     self.interpreter.display_message("\n  *Viewing image...*\n")
@@ -237,7 +234,7 @@ class Llm:
                     messages = tt.trim(
                         messages, system_message=system_message, model=model
                     )
-                except:
+                except Exception:
                     if len(messages) == 1:
                         if self.interpreter.in_terminal_interface:
                             self.interpreter.display_message(
@@ -264,7 +261,7 @@ Continuing...
                     messages = tt.trim(
                         messages, system_message=system_message, max_tokens=8000
                     )
-        except:
+        except Exception:
             # If we're trimming messages, this won't work.
             # If we're trimming from a model we don't know, this won't work.
             # Better not to fail until `messages` is too big, just for frustrations sake, I suppose.
@@ -309,7 +306,7 @@ Continuing...
             litellm.set_verbose = True
 
         if (
-            self.interpreter.debug == True and False  # DISABLED
+            self.interpreter.debug and False  # DISABLED
         ):  # debug will equal "server" if we're debugging the server specifically
             print("\n\n\nOPENAI COMPATIBLE MESSAGES:\n\n\n")
             for message in messages:
@@ -340,7 +337,7 @@ Continuing...
         if self._is_loaded:
             return
 
-        if self.model.startswith("ollama/") and not ":" in self.model:
+        if self.model.startswith("ollama/") and ":" not in self.model:
             self.model = self.model + ":latest"
 
         self._is_loaded = True
@@ -375,7 +372,7 @@ Continuing...
                 requests.post(f"{api_base}/api/pull", json={"name": model_name})
 
             # Get context window if not set
-            if self.context_window == None:
+            if self.context_window is None:
                 response = requests.post(
                     f"{api_base}/api/show", json={"name": model_name}
                 )
@@ -387,8 +384,8 @@ Continuing...
                         break
                 if context_length is not None:
                     self.context_window = context_length
-            if self.max_tokens == None:
-                if self.context_window != None:
+            if self.max_tokens is None:
+                if self.context_window is not None:
                     self.max_tokens = int(self.context_window * 0.2)
 
             # Send a ping, which will actually load the model
@@ -404,15 +401,15 @@ Continuing...
 
         # Validate LLM should be moved here!!
 
-        if self.context_window == None:
+        if self.context_window is None:
             try:
                 model_info = litellm.get_model_info(model=self.model)
                 self.context_window = model_info["max_input_tokens"]
-                if self.max_tokens == None:
+                if self.max_tokens is None:
                     self.max_tokens = min(
                         int(self.context_window * 0.2), model_info["max_output_tokens"]
                     )
-            except:
+            except Exception:
                 pass
 
 

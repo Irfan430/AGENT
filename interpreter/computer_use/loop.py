@@ -20,7 +20,7 @@ except ImportError:  # 3.10 compatibility
 from typing import Any, List, cast
 
 import requests
-from anthropic import Anthropic, AnthropicBedrock, AnthropicVertex, APIResponse
+from anthropic import Anthropic, AnthropicBedrock, AnthropicVertex
 from anthropic.types import ToolResultBlockParam
 from anthropic.types.beta import (
     BetaContentBlock,
@@ -35,11 +35,11 @@ from anthropic.types.beta import (
     BetaToolResultBlockParam,
 )
 
-from .tools import BashTool, ComputerTool, EditTool, ToolCollection, ToolResult
+from .tools import ComputerTool, ToolCollection, ToolResult
 
 BETA_FLAG = "computer-use-2024-10-22"
 
-from typing import List, Optional
+from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
@@ -68,7 +68,7 @@ def print_markdown(message):
         else:
             try:
                 rich_print(Markdown(line))
-            except UnicodeEncodeError as e:
+            except UnicodeEncodeError:
                 # Replace the problematic character or handle the error as needed
                 print("Error displaying line:", line)
 
@@ -409,7 +409,7 @@ async def main():
 
                     yield f"data: {json.dumps({'choices': [{'delta': {'content': '', 'finish_reason': 'stop'}}]})}\n\n"
 
-                except Exception as e:
+                except Exception:
                     print("Error: An exception occurred.")
                     print(traceback.format_exc())
                     pass
@@ -481,8 +481,8 @@ Move your mouse to any corner of the screen to exit.
             data = {"first_name": first_name, "email": email}
 
             try:
-                response = requests.post(url, json=data)
-            except requests.RequestException as e:
+                requests.post(url, json=data)
+            except requests.RequestException:
                 pass
 
             print_markdown("\nWe'll email you shortly. ✓\n---\n")
@@ -513,7 +513,7 @@ Move your mouse to any corner of the screen to exit.
             ):
                 if chunk["type"] == "messages":
                     messages = chunk["messages"]
-        except Exception as e:
+        except Exception:
             raise
 
     # The thread will automatically terminate when the main program exits

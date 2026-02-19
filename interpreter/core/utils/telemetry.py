@@ -9,13 +9,11 @@ Disable anonymous telemetry by execute one of below:
 based on ChromaDB's telemetry: https://github.com/chroma-core/chroma/tree/main/chromadb/telemetry/product
 """
 
-import contextlib
 import json
 import os
-import threading
 import uuid
 
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import version
 import requests
 
 
@@ -36,7 +34,7 @@ def get_or_create_uuid():
             with open(uuid_file_path, "w") as file:
                 file.write(new_uuid)
             return new_uuid
-    except:
+    except Exception:
         # Non blocking
         return "idk"
 
@@ -58,5 +56,5 @@ def send_telemetry(event_name, properties=None):
             "distinct_id": user_id,
         }
         requests.post(url, headers=headers, data=json.dumps(data))
-    except:
+    except Exception:
         pass
