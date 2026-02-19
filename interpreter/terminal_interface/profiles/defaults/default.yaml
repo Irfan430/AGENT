@@ -1,32 +1,22 @@
-### OPEN INTERPRETER CONFIGURATION FILE
-
-# Remove the "#" before the settings below to use them.
+### AGENT CONFIGURATION FILE (DeepSeek Default)
 
 # LLM Settings
 llm:
-  model: "gpt-4o"
-  temperature: 0
-  # api_key: ...  # Your API key, if the API requires it
-  # api_base: ...  # The URL where an OpenAI-compatible server is running to handle LLM API requests
-  # api_version: ...  # The version of the API (this is primarily for Azure)
-  # max_output: 2500  # The maximum characters of code output visible to the LLM
+  model: "deepseek/deepseek-chat"
+  api_base: "https://api.deepseek.com/v1"
+  temperature: 0.7
+  context_window: 64000
+  max_tokens: 4096
+  supports_functions: true
 
 # Computer Settings
 computer:
-  import_computer_api: True # Gives OI a helpful Computer API designed for code interpreting language models
-
-# Custom Instructions
-# custom_instructions: ""  # This will be appended to the system message
+  import_computer_api: True
 
 # General Configuration
-# auto_run: False  # If True, code will run without asking for confirmation
-# safe_mode: "off"  # The safety mode for the LLM — one of "off", "ask", "auto"
-# offline: False  # If True, will disable some online features like checking for updates
-# verbose: False  # If True, will print detailed logs
+auto_run: True
+offline: False
+verbose: False
 
-# To use a separate model for the `wtf` command:
-# wtf:
-#   model: "gpt-4o-mini"
-
-# Documentation
-# All options: https://docs.openinterpreter.com/settings
+# AGENT Identification
+display_message: "> AGENT is ready. Using DeepSeek as the default LLM.\n"

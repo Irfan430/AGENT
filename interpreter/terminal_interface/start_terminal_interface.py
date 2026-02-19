@@ -294,6 +294,12 @@ def start_terminal_interface(interpreter):
             },
         },
         {
+            "name": "gui",
+            "nickname": "g",
+            "help_text": "Launch AGENT GUI (Manus AI-inspired interface)",
+            "type": bool,
+        },
+        {
             "name": "stdin",
             "nickname": "s",
             "help_text": "Run OI in stdin mode",
@@ -563,6 +569,20 @@ Use """ to write multi-line messages.
 
     if args.server:
         interpreter.server.run()
+        return
+
+    # GUI mode
+    if args.gui:
+        from interpreter.gui_launcher import launch_gui
+        gui_launcher = launch_gui(interpreter, open_browser=True)
+        if gui_launcher:
+            # Keep the GUI running
+            try:
+                while gui_launcher.is_running:
+                    import time
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                gui_launcher.stop()
         return
 
     interpreter.in_terminal_interface = True
