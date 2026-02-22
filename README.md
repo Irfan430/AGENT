@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project aims to develop a personal autonomous AI agent, mirroring the capabilities and operational smoothness of Manus AI, excluding image generation. The agent will be capable of deep interaction with the operating system (OS), comprehensive web browsing, advanced code execution, and seamless integration with GitHub. Leveraging the DeepSeek API for its core intelligence, this agent will be designed for efficient, secure, and highly customizable operation on a personal computer. This document serves as a master blueprint, detailing the architecture, technical stack, implementation guide, and deployment considerations for building a truly autonomous and versatile AI assistant.
+This project aims to develop a personal autonomous AI agent, mirroring the capabilities and operational smoothness of Manus AI, excluding image generation. The agent will be capable of deep interaction with the operating system (OS), comprehensive web browsing, advanced code execution, and seamless integration with GitHub. Leveraging the **DeepSeek API** for its core intelligence, this agent will be designed for efficient, secure, and highly customizable operation on a personal computer across **Ubuntu, Linux, and Windows** environments. This document serves as a master blueprint, detailing the architecture, technical stack, implementation guide, and deployment considerations for building a truly autonomous and versatile AI assistant.
 
 ## Core Architecture: The "Manus-like" Setup
 
@@ -30,7 +30,7 @@ To build this advanced autonomous agent, the following technologies and librarie
 *   **OS Interaction:** Python's `subprocess` module (for secure terminal command execution), `os` module (for file system operations).
 *   **Web Browsing:** Playwright (for headless/headed browser automation, enabling web navigation, data extraction, and interaction with web applications).
 *   **Code Execution Environment:** Docker (to provide a secure, sandboxed environment for executing generated code, protecting the host OS from unintended modifications).
-*   **Memory/Vector Database:** ChromaDB (for storing and retrieving conversational history, tool usage logs, and learned knowledge, facilitating RAG).
+*   **Memory/Vector Database:** ChromaDB (for storing and retrieving conversational history, tool usage logs, and learned knowledge, facilitating Retrieval Augmented Generation - RAG).
 *   **GitHub Integration:** `PyGithub` library or direct `gh` CLI commands via `subprocess` (for repository management, including creation, cloning, committing, and pushing).
 *   **Multimedia Processing (Excluding Image Generation):**
     *   **Audio/Speech:** `SpeechRecognition` (for transcribing audio to text), `gTTS` (for text-to-speech conversion), `pydub` (for audio manipulation).
@@ -38,13 +38,20 @@ To build this advanced autonomous agent, the following technologies and librarie
 *   **Data Analysis & Visualization:** `pandas` (for data manipulation and analysis), `matplotlib` / `seaborn` (for generating charts and saving them as image files).
 *   **Slides Generation:** Custom Python scripts utilizing libraries like `python-pptx` (for PowerPoint generation) or `Markdown` to HTML/PDF converters (for web-based presentations).
 
+## Cross-Platform Compatibility
+
+This agent is designed to run seamlessly on various personal computer operating systems, ensuring flexibility and broad accessibility:
+
+*   **Ubuntu/Linux:** The native environment for Docker and Python development, offering optimal performance and ease of setup for terminal-based operations.
+*   **Windows:** Fully supported via **WSL2 (Windows Subsystem for Linux 2)**, which provides a complete Linux environment within Windows, allowing for smooth execution of all agent components. Direct Windows PowerShell/CMD execution is also possible for most Python-based tools, though WSL2 is recommended for a more consistent development experience.
+
 ## Step-by-Step Implementation Guide: Building Your Manus-like Agent
 
 This section outlines a comprehensive, phased approach to building your personal autonomous AI agent, focusing on detailed implementation steps, advanced features, and best practices for a "Manus-like" experience.
 
 ### Phase 1: Foundation - DeepSeek API, Custom Identity & Backend API
 
-1.  **Obtain DeepSeek API Key:** Register on the [DeepSeek Platform](https://platform.deepseek.com/) and generate your API key. Ensure you have sufficient balance for API calls. Store this key securely (e.g., in environment variables or a `.env` file).
+1.  **Obtain DeepSeek API Key:** Register on the [DeepSeek Platform](https://platform.deepseek.com/) and generate your API key. Ensure you have sufficient balance for API calls. Store this key securely.
 2.  **Python Backend Setup (FastAPI):**
     *   Create a new Python project for your backend API.
     *   Install FastAPI and Uvicorn: `pip install fastapi uvicorn`.
@@ -57,12 +64,13 @@ This section outlines a comprehensive, phased approach to building your personal
         # Example of dynamic system prompt
         def get_system_prompt(agent_name, personality_traits):
             return f"""
-            You are '{agent_name}', an AI assistant with the following personality: {personality_traits}. 
+            You are \'{agent_name}\', an AI assistant with the following personality: {personality_traits}. 
             Your primary goal is to assist the user with programming tasks, system automation, and information retrieval. 
             You are always polite, proactive, and provide clear, concise explanations. 
             You enjoy solving complex problems and learning new things. Your responses should reflect a positive and supportive tone.
             """
         ```
+        By modifying this `system_prompt`, you can define your agent's name, role, tone, and overall persona.
 
 ### Phase 2: Advanced Tool Development (Function Calling)
 
@@ -71,7 +79,7 @@ Develop a comprehensive set of Python functions that the agent can call to inter
 1.  **Terminal Command Execution Tool:**
     *   `execute_command(command: str) -> dict`: Runs shell commands using Python's `subprocess` module. Returns a dictionary containing `stdout`, `stderr`, and `return_code`. Implement timeouts and error handling.
 2.  **File System Interaction Tools:**
-    *   `read_file(path: str) -> dict`: Reads and returns file content. Includes checks for existence and permissions.
+    *   `read_file(path: str) -> dict`: Reads and returns the content of a file. Includes checks for existence and permissions.
     *   `write_file(path: str, content: str) -> dict`: Writes content to a file. Handles directory creation.
     *   `list_directory(path: str, recursive: bool = False) -> dict`: Lists directory contents.
     *   `delete_file(path: str) -> dict`: Safely deletes a file. Implement safeguards.
@@ -143,9 +151,13 @@ Given the agent's extensive control over the OS, security is paramount. Proper s
 1.  **Docker Containerization:** Run the entire agent (backend, LangGraph, tools) within a Docker container. This isolates the agent's environment from your host OS.
     *   Create a `Dockerfile` that sets up the Python environment, installs all dependencies, and configures the agent.
     *   Mount specific, restricted directories from your host OS into the Docker container (e.g., a dedicated `agent_workspace` folder, not your entire home directory). Define clear permissions for these mounted volumes.
-2.  **Confirmation Mechanism:** Implement a user confirmation step (via the UI) before the agent executes any potentially destructive OS command (e.g., `rm -rf`, `git push`). The agent should output the command and wait for explicit user approval.
-3.  **Least Privilege Principle:** Ensure the Docker container or the agent process runs with the minimum necessary permissions. Avoid running as root.
-4.  **API Key Management:** Never hardcode API keys. Use environment variables or a secure secrets management system.
+2.  **Configuration Management (Environment Variables & Fallback):**
+    *   **Priority to Environment Variables:** The agent should first attempt to load sensitive information (like `DEEPSEEK_API_KEY`, `GITHUB_TOKEN`) from environment variables, especially when running in Docker.
+    *   **`.env` File Support:** For local development, support loading environment variables from a `.env` file (e.g., using `python-dotenv`).
+    *   **Fallback to Config File:** If environment variables are not found, the agent should gracefully fall back to a local configuration file (e.g., `config.yaml` or `config.json`) for non-sensitive settings or default values. This ensures flexibility in deployment scenarios.
+3.  **Confirmation Mechanism:** Implement a user confirmation step (via the UI) before the agent executes any potentially destructive OS command (e.g., `rm -rf`, `git push`). The agent should output the command and wait for explicit user approval.
+4.  **Least Privilege Principle:** Ensure the Docker container or the agent process runs with the minimum necessary permissions. Avoid running as root.
+5.  **API Key Management:** Never hardcode API keys. Use environment variables or a secure secrets management system.
 
 ## Cost Estimation (DeepSeek API)
 
